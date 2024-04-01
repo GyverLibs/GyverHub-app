@@ -3,7 +3,7 @@ description: Панель управления для esp8266, esp32 и друг
 
 publish_to: 'none'
 
-version: 1.0.50+21
+version: 1.0.51+22
 
 environment:
   sdk: '>=3.1.3 <4.0.0'
