@@ -100,14 +100,15 @@ class _SplashScreenState extends State<SplashScreen> {
   Future<void> run() async {
     box = GetStorage();
     await initPermission();
-    //
-    // final String hub = box.read<String?>('hub') ?? '';
-    // if (hub.isEmpty) {
-    //   await checkVersion();
-    // } else {
-    //   checkVersion();
-    // }
-    await checkVersion();
+    
+    final String hub = box.read<String?>('hub') ?? '';
+    if (hub.isEmpty) {
+      await checkVersion();
+    } else {
+      checkVersion();
+    }
+    // or
+    // await checkVersion();
     startServer();
   }
 
