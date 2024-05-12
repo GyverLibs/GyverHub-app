@@ -25,7 +25,7 @@ class SplashScreen extends StatefulWidget {
 
 class _SplashScreenState extends State<SplashScreen> {
   Future checkVersion() async {
-    final bool check = await checkInternetConnection();
+    final bool check = await Helpers.checkInternetConnection();
 
     if (check) {
       final res = await http.get(Uri.parse(Env.versionUrl));
