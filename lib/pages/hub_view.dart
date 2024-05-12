@@ -63,9 +63,11 @@ class _HubViewState extends State<HubView> {
             now.difference(currentBackPressTime!) >
                 const Duration(seconds: 2)) {
           currentBackPressTime = now;
-          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-            content: Text('Click again to exit'),
-          ));
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Click again to exit'),
+            ),
+          );
         } else {
           Navigator.pop(context);
         }
@@ -108,7 +110,8 @@ class _HubViewState extends State<HubView> {
                       (controller, challenge) async {
                     print(challenge.protectionSpace);
                     return ServerTrustAuthResponse(
-                        action: ServerTrustAuthResponseAction.PROCEED);
+                      action: ServerTrustAuthResponseAction.PROCEED,
+                    );
                   },
                   onConsoleMessage: (c, u) {
                     final msg = u.message;
@@ -137,8 +140,10 @@ class _HubViewState extends State<HubView> {
 
                     if (uri.host != Env.localServerUri.host) {
                       if (await canLaunchUrl(uri)) {
-                        await launchUrl(uri,
-                            mode: LaunchMode.externalApplication);
+                        await launchUrl(
+                          uri,
+                          mode: LaunchMode.externalApplication,
+                        );
                       }
                       return NavigationActionPolicy.CANCEL;
                     }
@@ -152,7 +157,8 @@ class _HubViewState extends State<HubView> {
                       callback: (args) async {
                         _requestPermissions();
                         return _connectToDevice(
-                            _discoveredDevices as DiscoveredDevice);
+                          _discoveredDevices as DiscoveredDevice,
+                        );
                       },
                     );
 

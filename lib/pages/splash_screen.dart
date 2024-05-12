@@ -9,7 +9,7 @@ import 'package:mini_server/mini_server_package.dart';
 import 'package:http/http.dart' as http;
 import 'package:permission_handler/permission_handler.dart';
 
-import '../core/helpers.dart';
+import 'package:gyver_hub/core/helpers.dart';
 
 Future initPermission() async {
   await GetStorage.init();
@@ -64,10 +64,12 @@ class _SplashScreenState extends State<SplashScreen> {
     if (hub.isNotEmpty) {
       Navigator.popAndPushNamed(context, '/hub');
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-        backgroundColor: CustomColors.error,
-        content: Text('Error internet connection!'),
-      ));
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          backgroundColor: CustomColors.error,
+          content: Text('Error internet connection!'),
+        ),
+      );
     }
   }
 

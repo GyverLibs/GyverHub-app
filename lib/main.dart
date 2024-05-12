@@ -4,8 +4,8 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:gyver_hub/core/theme.dart';
-import '../pages/splash_screen.dart';
-import '../pages/hub_view.dart';
+import 'package:gyver_hub/pages/splash_screen.dart';
+import 'package:gyver_hub/pages/hub_view.dart';
 
 class MyHttpOverrides extends HttpOverrides {
   @override
