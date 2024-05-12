@@ -1,5 +1,5 @@
 import 'dart:io';
-import 'package:gyver_hub/env.dart';
+import 'package:gyver_hub/core/env.dart';
 
 class Helpers {
   static Future<bool> checkInternetConnection() async {

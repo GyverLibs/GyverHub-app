@@ -3,7 +3,8 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:get_storage/get_storage.dart';
-import 'package:gyver_hub/env.dart';
+import 'package:gyver_hub/core/env.dart';
+import 'package:gyver_hub/core/theme.dart';
 import 'package:mini_server/mini_server_package.dart';
 import 'package:http/http.dart' as http;
 import 'package:permission_handler/permission_handler.dart';
@@ -43,8 +44,8 @@ class _SplashScreenState extends State<SplashScreen> {
 
   Future startServer() async {
     final miniServer = MiniServer(
-      host: 'localhost',
-      port: 9090,
+      host: Env.localServerUri.host,
+      port: Env.localServerUri.port,
     );
 
     final String hub = box.read<String?>('hub') ?? '';
@@ -64,7 +65,7 @@ class _SplashScreenState extends State<SplashScreen> {
       Navigator.popAndPushNamed(context, '/hub');
     } else {
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-        backgroundColor: Colors.red,
+        backgroundColor: CustomColors.error,
         content: Text('Error internet connection!'),
       ));
     }
@@ -111,7 +112,7 @@ class _SplashScreenState extends State<SplashScreen> {
               height: 100,
               width: 100,
               child: CircularProgressIndicator(
-                color: Env.primColor,
+                color: CustomColors.primary,
               ),
             ),
           ],

@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:flutter_reactive_ble/flutter_reactive_ble.dart';
+import 'package:gyver_hub/core/env.dart';
 import 'package:open_file/open_file.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -76,8 +77,9 @@ class _HubViewState extends State<HubView> {
               child: SafeArea(
                 child: InAppWebView(
                   key: webViewKey,
-                  initialUrlRequest:
-                      URLRequest(url: WebUri('http://localhost:9090/')),
+                  initialUrlRequest: URLRequest(
+                    url: Env.localServerUri,
+                  ),
                   onProgressChanged: (controller, progress) {
                     if (progress == 100) {
                       controller.evaluateJavascript(source: """
@@ -179,7 +181,7 @@ class _HubViewState extends State<HubView> {
                       return NavigationActionPolicy.CANCEL;
                     }
 
-                    if (uri.host != 'localhost') {
+                    if (uri.host != Env.localServerUri.host) {
                       if (await canLaunchUrl(uri)) {
                         await launchUrl(uri,
                             mode: LaunchMode.externalApplication);
