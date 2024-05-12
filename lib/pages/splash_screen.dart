@@ -14,32 +14,6 @@ Future initPermission() async {
   await GetStorage.init();
   await Permission.storage.request();
   await Permission.location.request();
-
-  // await Permission.bluetooth.request();
-  // await Permission.bluetoothScan.request();
-  // await Permission.bluetoothAdvertise.request();
-  // await Permission.bluetoothConnect.request();
-
-  // await askBlePermission();
-}
-
-//deprecated
-void askBlePermission() async {
-  final blePermission = await Permission.bluetooth.status;
-  if (blePermission.isDenied) {
-    Permission.bluetooth.request();
-  }
-
-  if (Platform.isAndroid) {
-    final bleConnectPermission = await Permission.bluetoothConnect.status;
-    final bleScanPermission = await Permission.bluetoothScan.status;
-    if (bleConnectPermission.isDenied) {
-      Permission.bluetoothConnect.request();
-    }
-    if (bleScanPermission.isDenied) {
-      Permission.bluetoothScan.request();
-    }
-  }
 }
 
 class SplashScreen extends StatefulWidget {
@@ -108,8 +82,6 @@ class _SplashScreenState extends State<SplashScreen> {
     } else {
       checkVersion();
     }
-    // or
-    // await checkVersion();
     startServer();
   }
 

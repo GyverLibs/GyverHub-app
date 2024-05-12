@@ -35,8 +35,6 @@ class _HubViewState extends State<HubView> {
     } else {
       platform = TargetPlatform.iOS;
     }
-
-    // getComputedStyle(document.documentElement).getPropertyValue('--prim');
   }
 
   DateTime? currentBackPressTime;
@@ -48,7 +46,6 @@ class _HubViewState extends State<HubView> {
     return PopScope(
       canPop: false,
       onPopInvoked: (_) async {
-        // final canGoBack = await webViewController?.canGoBack() ?? false;
         final status = await webViewController?.evaluateJavascript(
           source: 'document.querySelector(`#back`).style.display;',
         );
@@ -139,13 +136,11 @@ class _HubViewState extends State<HubView> {
                     allowFileAccess: true,
                     allowFileAccessFromFileURLs: true,
                     allowUniversalAccessFromFileURLs: true,
-
                     alwaysBounceHorizontal: false,
                     horizontalScrollBarEnabled: false,
                     allowContentAccess: true,
                     algorithmicDarkeningAllowed: false,
                     forceDark: ForceDark.OFF,
-                    // forceDarkStrategy: ForceDarkStrategy.PREFER_WEB_THEME_OVER_USER_AGENT_DARKENING,
                   ),
                   onReceivedServerTrustAuthRequest:
                       (controller, challenge) async {
@@ -165,9 +160,7 @@ class _HubViewState extends State<HubView> {
                   onLoadStop: (controller, url) async {
                     if (!initJs) {
                       initJs = true;
-
                       await controller.evaluateJavascript(source: """
-                         
                         document.body.addEventListener('click', (e) => {
                             if (e.target.hasAttribute(`download`)) {
                                 console.log(JSON.stringify({
@@ -201,7 +194,6 @@ class _HubViewState extends State<HubView> {
                     webViewController?.addJavaScriptHandler(
                       handlerName: 'getDevice',
                       callback: (args) async {
-                        // _startScanning();
                         _requestPermissions();
                         return _connectToDevice(
                             _discoveredDevices as DiscoveredDevice);
@@ -228,9 +220,7 @@ class _HubViewState extends State<HubView> {
   Future _downloadFile(String filename, String data) async {
     await _prepareSaveDir();
     final String dir = await _findLocalPath();
-
     final x = data.split('base64,');
-
     final bytes = Base64Decoder().convert(x[1]);
     final filePath = '$dir/$filename'.replaceAll('//', '/');
     final File file = File(filePath);
