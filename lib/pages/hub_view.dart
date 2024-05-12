@@ -10,7 +10,6 @@ import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-
 class HubView extends StatefulWidget {
   const HubView({super.key});
 
@@ -22,8 +21,8 @@ class _HubViewState extends State<HubView> {
   final GlobalKey webViewKey = GlobalKey();
 
   InAppWebViewController? webViewController;
-  FlutterReactiveBle _flutterReactiveBle = FlutterReactiveBle();
-  List<DiscoveredDevice> _discoveredDevices = [];
+  final FlutterReactiveBle _flutterReactiveBle = FlutterReactiveBle();
+  final List<DiscoveredDevice> _discoveredDevices = [];
 
   late TargetPlatform? platform;
 
@@ -44,32 +43,32 @@ class _HubViewState extends State<HubView> {
 
   bool initJs = false;
 
-
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: () async {
+    return PopScope(
+      canPop: false,
+      onPopInvoked: (_) async {
         // final canGoBack = await webViewController?.canGoBack() ?? false;
         final status = await webViewController?.evaluateJavascript(
-          source: "document.querySelector(`#back`).style.display;",
+          source: 'document.querySelector(`#back`).style.display;',
         );
 
         if (status != 'none') {
           await webViewController?.goBack();
-          return false;
+          return;
         }
 
-        DateTime now = DateTime.now();
-        if (currentBackPressTime == null || now.difference(currentBackPressTime!) > const Duration(seconds: 2)) {
+        final now = DateTime.now();
+        if (currentBackPressTime == null ||
+            now.difference(currentBackPressTime!) >
+                const Duration(seconds: 2)) {
           currentBackPressTime = now;
           ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-            content: Text("Click again to exit"),
+            content: Text('Click again to exit'),
           ));
-          return false;
+        } else {
+          Navigator.pop(context);
         }
-
-        exit(0);
-              return true;
       },
       child: Scaffold(
         extendBody: false,
@@ -80,10 +79,11 @@ class _HubViewState extends State<HubView> {
               child: SafeArea(
                 child: InAppWebView(
                   key: webViewKey,
-                  initialUrlRequest: URLRequest(url: WebUri('http://localhost:9090/')),
-                    onProgressChanged: (controller, progress) {
-                      if (progress == 100) {
-                        controller.evaluateJavascript(source: """
+                  initialUrlRequest:
+                      URLRequest(url: WebUri('http://localhost:9090/')),
+                  onProgressChanged: (controller, progress) {
+                    if (progress == 100) {
+                      controller.evaluateJavascript(source: """
                        async function cfg_export() {
                             try {
                               const textToCopy = btoa(JSON.stringify(cfg)) + ';' + btoa(JSON.stringify(hub.cfg)) + ';' + btoa(encodeURIComponent(hub.export()))
@@ -101,7 +101,7 @@ class _HubViewState extends State<HubView> {
                        }
                        """);
 
-                        controller.evaluateJavascript(source: """  
+                      controller.evaluateJavascript(source: """  
                         
                            async function cfg_import() {
                                 try {
@@ -131,8 +131,8 @@ class _HubViewState extends State<HubView> {
                                                         
                            }
                        """);
-                      }
-                    },
+                    }
+                  },
                   initialSettings: InAppWebViewSettings(
                     supportZoom: false,
                     javaScriptEnabled: true,
@@ -147,9 +147,11 @@ class _HubViewState extends State<HubView> {
                     forceDark: ForceDark.OFF,
                     // forceDarkStrategy: ForceDarkStrategy.PREFER_WEB_THEME_OVER_USER_AGENT_DARKENING,
                   ),
-                  onReceivedServerTrustAuthRequest: (controller, challenge) async {
+                  onReceivedServerTrustAuthRequest:
+                      (controller, challenge) async {
                     print(challenge.protectionSpace);
-                    return ServerTrustAuthResponse(action: ServerTrustAuthResponseAction.PROCEED);
+                    return ServerTrustAuthResponse(
+                        action: ServerTrustAuthResponseAction.PROCEED);
                   },
                   onConsoleMessage: (c, u) {
                     final msg = u.message;
@@ -174,19 +176,20 @@ class _HubViewState extends State<HubView> {
                             }
                         });   
                        """);
-
                     }
                   },
-                  shouldOverrideUrlLoading: (controller, navigationAction) async {
-                    var uri = navigationAction.request.url!;
+                  shouldOverrideUrlLoading:
+                      (controller, navigationAction) async {
+                    final uri = navigationAction.request.url!;
 
-                    if (uri.rawValue.contains("base64,")) {
+                    if (uri.rawValue.contains('base64,')) {
                       return NavigationActionPolicy.CANCEL;
                     }
 
                     if (uri.host != 'localhost') {
                       if (await canLaunchUrl(uri)) {
-                        await launchUrl(uri, mode: LaunchMode.externalApplication);
+                        await launchUrl(uri,
+                            mode: LaunchMode.externalApplication);
                       }
                       return NavigationActionPolicy.CANCEL;
                     }
@@ -198,21 +201,20 @@ class _HubViewState extends State<HubView> {
                     webViewController?.addJavaScriptHandler(
                       handlerName: 'getDevice',
                       callback: (args) async {
-                       // _startScanning();
+                        // _startScanning();
                         _requestPermissions();
-                        return _connectToDevice(_discoveredDevices as DiscoveredDevice);
-
+                        return _connectToDevice(
+                            _discoveredDevices as DiscoveredDevice);
                       },
                     );
 
                     webViewController?.addJavaScriptHandler(
                       handlerName: 'getClipboardText',
                       callback: (args) async {
-                        String clipboardText = await _getFromClipboard();
+                        final String clipboardText = await _getFromClipboard();
                         return clipboardText;
                       },
                     );
-
                   },
                 ),
               ),
@@ -225,13 +227,13 @@ class _HubViewState extends State<HubView> {
 
   Future _downloadFile(String filename, String data) async {
     await _prepareSaveDir();
-    String dir = await _findLocalPath();
+    final String dir = await _findLocalPath();
 
     final x = data.split('base64,');
 
-    var bytes = Base64Decoder().convert(x[1]);
+    final bytes = Base64Decoder().convert(x[1]);
     final filePath = '$dir/$filename'.replaceAll('//', '/');
-    File file = new File(filePath);
+    final File file = File(filePath);
     await file.writeAsBytes(bytes);
     await OpenFile.open(file.path);
     return file;
@@ -240,26 +242,26 @@ class _HubViewState extends State<HubView> {
   Future _prepareSaveDir() async {
     final localPath = await _findLocalPath();
     final savedDir = Directory(localPath);
-    bool hasExisted = await savedDir.exists();
+    final bool hasExisted = await savedDir.exists();
     if (!hasExisted) {
       savedDir.create();
     }
   }
 
   Future _findLocalPath() async {
-    var directory = await getDownloadsDirectory();
-    return directory!.path + Platform.pathSeparator + 'GyverHub';
+    final directory = await getDownloadsDirectory();
+    return '${directory!.path}${Platform.pathSeparator}GyverHub';
   }
 
   Future<String> _getFromClipboard() async {
-    ClipboardData? clipboardData = await Clipboard.getData('text/plain');
+    final ClipboardData? clipboardData = await Clipboard.getData('text/plain');
     return clipboardData?.text ?? '';
   }
 
   void _requestPermissions() async {
-    Map<Permission, PermissionStatus> statuses = await [
+    final Map<Permission, PermissionStatus> statuses = await [
       Permission.bluetooth,
-           Permission.location,
+      Permission.location,
     ].request();
 
     // Check if permissions are granted
@@ -271,9 +273,10 @@ class _HubViewState extends State<HubView> {
       print('Location permission not granted');
     }
   }
+
   void _startScanning() {
     _flutterReactiveBle.scanForDevices(withServices: []).listen(
-          (scanResult) {
+      (scanResult) {
         // Update the list of discovered devices
         setState(() {
           _discoveredDevices.add(scanResult);
@@ -288,7 +291,6 @@ class _HubViewState extends State<HubView> {
 
   void _connectToDevice(DiscoveredDevice device) {
     // Add your logic to connect to the selected device
-    print('Connecting to device: ${device}');
+    print('Connecting to device: $device');
   }
-
 }
