@@ -165,7 +165,7 @@ class _HubViewState extends State<HubView> {
                     webViewController?.addJavaScriptHandler(
                       handlerName: 'getClipboardText',
                       callback: (args) async {
-                        final String clipboardText = await _getFromClipboard();
+                        final clipboardText = await _getFromClipboard();
                         return clipboardText;
                       },
                     );
@@ -181,11 +181,11 @@ class _HubViewState extends State<HubView> {
 
   Future _downloadFile(String filename, String data) async {
     await _prepareSaveDir();
-    final String dir = await _findLocalPath();
+    final dir = await _findLocalPath();
     final x = data.split('base64,');
     final bytes = Base64Decoder().convert(x[1]);
     final filePath = '$dir/$filename'.replaceAll('//', '/');
-    final File file = File(filePath);
+    final file = File(filePath);
     await file.writeAsBytes(bytes);
     await OpenFile.open(file.path);
     return file;
@@ -194,7 +194,7 @@ class _HubViewState extends State<HubView> {
   Future _prepareSaveDir() async {
     final localPath = await _findLocalPath();
     final savedDir = Directory(localPath);
-    final bool hasExisted = await savedDir.exists();
+    final hasExisted = await savedDir.exists();
     if (!hasExisted) {
       savedDir.create();
     }
@@ -206,12 +206,12 @@ class _HubViewState extends State<HubView> {
   }
 
   Future<String> _getFromClipboard() async {
-    final ClipboardData? clipboardData = await Clipboard.getData('text/plain');
+    final clipboardData = await Clipboard.getData('text/plain');
     return clipboardData?.text ?? '';
   }
 
   void _requestPermissions() async {
-    final Map<Permission, PermissionStatus> statuses = await [
+    final statuses = await [
       Permission.bluetooth,
       Permission.location,
     ].request();

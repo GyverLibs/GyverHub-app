@@ -26,18 +26,18 @@ class SplashScreen extends StatefulWidget {
 
 class _SplashScreenState extends State<SplashScreen> {
   Future checkVersion() async {
-    final bool check = await Helpers.checkInternetConnection();
+    final check = await Helpers.checkInternetConnection();
 
     if (check) {
       final res = await http.get(Uri.parse(Env.versionUrl));
-      final String resUtf8 = utf8.decode(res.bodyBytes);
-      final version = box.read('version');
+      final resUtf8 = utf8.decode(res.bodyBytes);
+      final version = _storage.read('version');
 
       if (resUtf8 != version) {
         final hub = await http.get(Uri.parse(Env.hubUrl));
-        final String bodyUtf8 = utf8.decode(hub.bodyBytes);
-        box.write('hub', bodyUtf8);
-        box.write('version', res.body);
+        final bodyUtf8 = utf8.decode(hub.bodyBytes);
+        _storage.write('hub', bodyUtf8);
+        _storage.write('version', res.body);
       }
     }
   }
@@ -48,12 +48,12 @@ class _SplashScreenState extends State<SplashScreen> {
       port: Env.localServerUri.port,
     );
 
-    final String hub = box.read<String?>('hub') ?? '';
+    final hub = _storage.read<String?>('hub') ?? '';
 
     miniServer.get('/', (HttpRequest httpRequest) async {
       final x = httpRequest.response;
 
-      final String charset = x.headers.contentType?.charset ?? 'utf-8';
+      final charset = x.headers.contentType?.charset ?? 'utf-8';
 
       x.headers.contentType = ContentType('text', 'html', charset: charset);
       x.headers.add('Access-Control-Allow-Origin', '*');
@@ -73,13 +73,13 @@ class _SplashScreenState extends State<SplashScreen> {
     }
   }
 
-  late final GetStorage box;
+  late final GetStorage _storage;
 
   Future<void> run() async {
-    box = GetStorage();
+    _storage = GetStorage();
     await initPermission();
 
-    final String hub = box.read<String?>('hub') ?? '';
+    final hub = _storage.read<String?>('hub') ?? '';
     if (hub.isEmpty) {
       await checkVersion();
     } else {

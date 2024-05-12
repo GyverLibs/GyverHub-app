@@ -3,7 +3,7 @@ import 'package:gyver_hub/core/env.dart';
 
 class Helpers {
   static Future<bool> checkInternetConnection() async {
-    String host = Env.versionUrl
+    var host = Env.versionUrl
         .replaceAll('https://', '')
         .replaceAll('http://', '')
         .split('/')

@@ -28,6 +28,10 @@ linter:
     prefer_final_locals: true
     require_trailing_commas: true
     always_use_package_imports: true
+    omit_local_variable_types: true
+    sort_pub_dependencies: true
+    sort_child_properties_last: true
+
 
 # Additional information about this file can be found at
 # https://dart.dev/guides/language/analysis-options
