@@ -6,6 +6,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:flutter_reactive_ble/flutter_reactive_ble.dart';
 import 'package:gyver_hub/core/env.dart';
+import 'package:gyver_hub/core/js.dart';
 import 'package:open_file/open_file.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -49,9 +50,8 @@ class _HubViewState extends State<HubView> {
     return PopScope(
       canPop: false,
       onPopInvoked: (_) async {
-        final status = await webViewController?.evaluateJavascript(
-          source: 'document.querySelector(`#back`).style.display;',
-        );
+        final status =
+            await webViewController?.evaluateJavascript(source: JS.canGoBack);
 
         if (status != 'none') {
           await webViewController?.goBack();
@@ -85,58 +85,11 @@ class _HubViewState extends State<HubView> {
                   ),
                   onProgressChanged: (controller, progress) {
                     if (progress == 100) {
-                      controller.evaluateJavascript(source: """
-                       async function cfg_export() {
-                            try {
-                              const textToCopy = btoa(JSON.stringify(cfg)) + ';' + btoa(JSON.stringify(hub.cfg)) + ';' + btoa(encodeURIComponent(hub.export()))
-                               var textArea = document.createElement("textarea");
-                              textArea.value = textToCopy;
-                              document.body.appendChild(textArea);
-                              textArea.select();
-                              document.execCommand('copy');
-                              document.body.removeChild(textArea);
-                              showPopup(lang.clip_copy);
-                            } catch (e) {
-                              showPopupError(lang.error);
-                            }                    
-                                                    
-                       }
-                       """);
-
-                      controller.evaluateJavascript(source: """  
-                        
-                           async function cfg_import() {
-                                try {
-                                let text = "";
-                                  await window.flutter_inappwebview.callHandler('getClipboardText').then(function(clipboardText) {
-                                    text = clipboardText
-                                  });    
-                                                         
-                                  text = text.split(';');
-                                  try {
-                                    cfg = JSON.parse(atob(text[0]));
-                                  } catch (e) { }
-                                  try {
-                                    hub.cfg = JSON.parse(atob(text[1]));
-                                  } catch (e) { }
-                                  try {
-                                    hub.import(decodeURIComponent(atob(text[2])));
-                                  } catch (e) { }
-                              
-                                  save_cfg();
-                                  save_devices();
-                                  showPopup(lang.import_ok);
-                                  setTimeout(() => location.reload(), 1500);
-                                } catch (e) {
-                                  showPopupError(lang.import_err);
-                                }       
-                                                        
-                           }
-                       """);
-
+                      controller.evaluateJavascript(source: JS.cfgExport);
+                      controller.evaluateJavascript(source: JS.cfgImport);
                       controller.evaluateJavascript(
-                          source:
-                              'document.getElementById("head_cont").style.paddingTop = "${topOffset}px"');
+                        source: JS.setOffset(topOffset),
+                      );
                     }
                   },
                   initialSettings: InAppWebViewSettings(
@@ -169,15 +122,9 @@ class _HubViewState extends State<HubView> {
                   onLoadStop: (controller, url) async {
                     if (!initJs) {
                       initJs = true;
-                      await controller.evaluateJavascript(source: """
-                        document.body.addEventListener('click', (e) => {
-                            if (e.target.hasAttribute(`download`)) {
-                                console.log(JSON.stringify({
-                                    'name': e.target.attributes.download.value, 'data': e.target.attributes.href.value,
-                                }));
-                            }
-                        });   
-                       """);
+                      await controller.evaluateJavascript(
+                        source: JS.cfgDownload,
+                      );
                     }
                   },
                   shouldOverrideUrlLoading:
