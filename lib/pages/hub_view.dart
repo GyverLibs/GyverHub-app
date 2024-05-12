@@ -44,6 +44,8 @@ class _HubViewState extends State<HubView> {
 
   @override
   Widget build(BuildContext context) {
+    final topOffset = MediaQuery.of(context).padding.top;
+
     return PopScope(
       canPop: false,
       onPopInvoked: (_) async {
@@ -75,6 +77,7 @@ class _HubViewState extends State<HubView> {
           children: [
             Expanded(
               child: SafeArea(
+                top: false,
                 child: InAppWebView(
                   key: webViewKey,
                   initialUrlRequest: URLRequest(
@@ -130,6 +133,10 @@ class _HubViewState extends State<HubView> {
                                                         
                            }
                        """);
+
+                      controller.evaluateJavascript(
+                          source:
+                              'document.getElementById("head_cont").style.paddingTop = "${topOffset}px"');
                     }
                   },
                   initialSettings: InAppWebViewSettings(

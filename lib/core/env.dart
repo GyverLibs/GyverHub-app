@@ -3,7 +3,7 @@ import 'package:gyver_hub/core/enums.dart';
 
 class Env {
   // change this value to switch env
-  static const buildMode = BuildMode.dev;
+  static const buildMode = BuildMode.release;
 
   static String get versionUrl => buildMode == BuildMode.release
       ? _Consts.releaseVersionUrl
