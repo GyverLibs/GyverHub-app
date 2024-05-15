@@ -46,6 +46,7 @@ class _HubViewState extends State<HubView> {
   @override
   Widget build(BuildContext context) {
     final topOffset = MediaQuery.of(context).padding.top;
+    final bottomOffset = MediaQuery.of(context).padding.bottom;
 
     return PopScope(
       canPop: false,
@@ -80,6 +81,7 @@ class _HubViewState extends State<HubView> {
             Expanded(
               child: SafeArea(
                 top: false,
+                bottom: false,
                 child: InAppWebView(
                   key: webViewKey,
                   initialUrlRequest: URLRequest(
@@ -90,7 +92,7 @@ class _HubViewState extends State<HubView> {
                       controller.evaluateJavascript(source: JS.cfgExport);
                       controller.evaluateJavascript(source: JS.cfgImport);
                       controller.evaluateJavascript(
-                        source: JS.setOffset(topOffset),
+                        source: JS.setOffset(topOffset, bottomOffset),
                       );
                     }
                   },
@@ -155,7 +157,7 @@ class _HubViewState extends State<HubView> {
                     webViewController?.addJavaScriptHandler(
                       handlerName: 'getDevice',
                       callback: (args) async {
-                        _requestPermissions();
+                        await _requestPermissions();
                         return _connectToDevice(
                           _discoveredDevices as DiscoveredDevice,
                         );
@@ -210,7 +212,7 @@ class _HubViewState extends State<HubView> {
     return clipboardData?.text ?? '';
   }
 
-  void _requestPermissions() async {
+  Future<void> _requestPermissions() async {
     final statuses = await [
       Permission.bluetooth,
       Permission.location,
