@@ -7,6 +7,8 @@ class JS {
       'document.body.addEventListener("click", (e) => { if (e.target.hasAttribute(`download`)) { console.log(JSON.stringify({ "name": e.target.attributes.download.value, "data": e.target.attributes.href.value, })); } });';
   static const canGoBack = 'document.querySelector(`#back`).style.display;';
 
+  static String cfgDeviceType(String os) => 'window.flutter_$os=true';
+
   static String setOffset(double topOffset, double bottomOffset) =>
       'try{document.getElementById("footer_cont").style.marginTop = "${-bottomOffset - 29}px";}catch{}; document.getElementsByClassName("footer")[0].style.paddingBottom = "${bottomOffset}px"; try{document.getElementById("menu").style.paddingTop = "${topOffset}px";}catch{}; try{document.getElementById("head_cont").style.paddingTop = "${topOffset}px";}catch{}; try{document.getElementsByClassName("header-row")[0].style.height = "${50 + topOffset}px"; document.getElementsByClassName("header-row")[0].style.paddingTop = "${topOffset}px";}catch{}; var elements = document.getElementsByClassName("main_inn"); for (let item of elements) { item.style.paddingTop = "${topOffset + 65}px"; }; elements = document.getElementsByClassName("projects_inn"); for (let item of elements) { item.style.paddingTop = "${topOffset + 65}px"; }; elements = document.getElementsByClassName("main-col"); for (let item of elements) { item.style.paddingTop = "${topOffset}px"; }';
 }

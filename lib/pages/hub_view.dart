@@ -11,6 +11,7 @@ import 'package:open_file/open_file.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:url_launcher/url_launcher.dart';
+// import 'package:web_view_ble/web_view_ble.dart';
 
 class HubView extends StatefulWidget {
   const HubView({super.key});
@@ -92,6 +93,9 @@ class _HubViewState extends State<HubView> {
                       controller.evaluateJavascript(source: JS.cfgExport);
                       controller.evaluateJavascript(source: JS.cfgImport);
                       controller.evaluateJavascript(
+                        source: JS.cfgDeviceType(Platform.operatingSystem),
+                      );
+                      controller.evaluateJavascript(
                         source: JS.setOffset(topOffset, bottomOffset),
                       );
                     }
@@ -125,6 +129,7 @@ class _HubViewState extends State<HubView> {
                     } catch (_) {}
                   },
                   onLoadStop: (controller, url) async {
+                    // WebViewBle.init(controller: controller, context: context);
                     if (!initJs) {
                       initJs = true;
                       await controller.evaluateJavascript(
