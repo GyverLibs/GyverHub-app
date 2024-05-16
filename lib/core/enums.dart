@@ -1,0 +1,4 @@
+enum BuildMode {
+  dev,
+  release,
+}
